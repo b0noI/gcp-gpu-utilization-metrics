@@ -1,8 +1,21 @@
-# gcp-gpu-utilization-metrics
+# How To Use It
+
 This repository provides simple way to monitor GPU utilization on GCP
 
-First, create the GPU metrics in your project:
+It is very simple to use, just run agent on each of your instance:
 
 ```bash
+git clone https://github.com/b0noI/gcp-gpu-utilization-metrics.git
+cd gcp-gpu-utilization-metrics
+pip install -r ./requirenments.txt
+python ./report_gpu_metrics.py &
+```
+
+This will auto create the metrics. But if you need to create metrics first run the following commands:
+
+```bash
+git clone https://github.com/b0noI/gcp-gpu-utilization-metrics.git
+cd gcp-gpu-utilization-metrics
+pip install -r ./requirenments.txt
 GOOGLE_CLOUD_PROJECT=<ID> python ./create_gpu_metrics.py
 ```
