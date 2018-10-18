@@ -19,12 +19,13 @@ project_name = client.project_path(project_id)
 instance_name = socket.gethostname()
 
 
-def report_metric(value, type, instance_name, zone):
+def report_metric(value, type, instance_name, zone, project_id):
     series = monitoring_v3.types.TimeSeries()
     series.metric.type = 'custom.googleapis.com/{type}'.format(type=type)
     series.resource.type = 'gce_instance'
     series.resource.labels['instance_id'] = instance_name
     series.resource.labels['zone'] = zone
+    series.resource.labels['project_id'] = project_id
     point = series.points.add()
     point.value.int64_value = value
     now = time.time()
@@ -67,9 +68,11 @@ while True:
   report_metric(get_gpu_utilization(),
                 GPU_UTILIZATION_METRIC_NAME,
                 instance_name,
-                zone)
+                zone,
+                project_id)
   report_metric(get_gpu_memory_utilization(),
                 GPU_MEMORY_UTILIZATION_METRIC_NAME,
                 instance_name,
-                zone)
+                zone,
+                project_id)
   time.sleep(5)
