@@ -3,6 +3,8 @@ import socket
 import subprocess
 import requests
 import csv
+import sys
+import getopt
 
 from google.cloud import monitoring_v3
 
@@ -60,9 +62,33 @@ def get_gpu_utilization():
 def get_gpu_memory_utilization():
     return get_nvidia_smi_utilization("utilization.memory")
 
+def get_reporting_frequency():
+    """Gets the reporting frequency specified by the
+    command line option, --freq. If not specified,
+    default is 5 seconds.
+    """
+
+    nsecs = 5
+
+    options, _ = getopt.getopt(sys.argv[1:], "", ["freq="])
+    for opt, val in options:
+        if (opt == '--freq'):
+            if (val[-1] == 'h'):
+                nsecs = int(val[:-1]) * 3600
+            elif (val[-1] == 'm'):
+                nsecs = int(val[:-1]) * 60
+            elif (val[-1] == 's'):
+                nsecs = int(val[:-1])
+            elif (val[-1] not in "hms"):
+                nsecs = int(val)
+
+    return nsecs
+
 
 GPU_UTILIZATION_METRIC_NAME = "gpu_utilization"
 GPU_MEMORY_UTILIZATION_METRIC_NAME = "gpu_memory_utilization"
+
+freq = get_reporting_frequency()
 
 while True:
   report_metric(get_gpu_utilization(),
@@ -75,4 +101,4 @@ while True:
                 instance_id,
                 zone,
                 project_id)
-  time.sleep(5)
+  time.sleep(freq)
